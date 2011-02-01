@@ -4,7 +4,7 @@ scala-tags
 Introduction
 ------------
 
-scala-tags is a small [Scala][1] compiler plugin generating a [tags][2] file for Scala source files.
+scala-tags is a small [Scala][1] compiler plugin to generate a [tags][2] file for Scala source files.
 This tags file may be then used by editors like [vim][3] or [emacs][4].
 
 Usage
