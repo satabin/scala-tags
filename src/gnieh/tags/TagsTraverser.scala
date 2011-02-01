@@ -43,11 +43,11 @@ abstract class TagsTraverser extends PluginComponent {
     }
 
     override def run {
-      
+
       // only runs if an output tags file was given
-      if(outputFile == null)
+      if (outputFile == null)
         return
-      
+
       // run the phase
       super.run
       // generate the tag file
@@ -80,20 +80,25 @@ abstract class TagsTraverser extends PluginComponent {
 
   object tagsCollecter extends Traverser {
     override def traverse(t: Tree) = {
-//      val sym = t.symbol
       val path = currentUnit.source.path
       t match {
-        case ClassDef(mods, name, _, _) if mods.hasFlag(TRAIT) =>
+        case ClassDef(mods, name, _, _)
+              if mods.hasFlag(TRAIT) && !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, TraitType)
-        case ClassDef(_, name, _, _) =>
+        case ClassDef(mods, name, _, _)
+              if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ClassType)
-        case ModuleDef(_, name, _) =>
+        case ModuleDef(mods, name, _)
+              if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ObjectType)
-        case DefDef(_, name, _, _, _, _) =>
+        case DefDef(mods, name, _, _, _, _)
+              if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, DefType)
-        case ValDef(mods, name, _, _) if mods.hasFlag(MUTABLE) =>
+        case ValDef(mods, name, _, _)
+              if mods.hasFlag(MUTABLE) && !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, VarType)
-        case ValDef(_, name, _, _) =>
+        case ValDef(mods, name, _, _)
+              if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ValType)
         case _ => // do nothing
       }
