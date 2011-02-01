@@ -20,6 +20,7 @@ import scala.collection.mutable.ListBuffer
 
 import scala.tools.nsc._
 import scala.tools.nsc.plugins.PluginComponent
+import scala.tools.nsc.symtab.Flags
 
 import java.io.{ File, FileWriter }
 
@@ -27,6 +28,7 @@ abstract class TagsTraverser extends PluginComponent {
 
   import global._
   import TagsTraverser._
+  import Flags._
 
   val phaseName: String = "scalatags"
 
@@ -78,21 +80,21 @@ abstract class TagsTraverser extends PluginComponent {
 
   object tagsCollecter extends Traverser {
     override def traverse(t: Tree) = {
-      val sym = t.symbol
+//      val sym = t.symbol
       val path = currentUnit.source.path
       t match {
-        case ClassDef(_, name, _, _) if sym.isTrait =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, TraitType)
+        case ClassDef(mods, name, _, _) if mods.hasFlag(TRAIT) =>
+          tags += Tag(name.decode, path, t.pos.lineContent, TraitType)
         case ClassDef(_, name, _, _) =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, ClassType)
+          tags += Tag(name.decode, path, t.pos.lineContent, ClassType)
         case ModuleDef(_, name, _) =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, ObjectType)
+          tags += Tag(name.decode, path, t.pos.lineContent, ObjectType)
         case DefDef(_, name, _, _, _, _) =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, DefType)
-        case ValDef(_, name, _, _) if sym.isMutable =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, VarType)
+          tags += Tag(name.decode, path, t.pos.lineContent, DefType)
+        case ValDef(mods, name, _, _) if mods.hasFlag(MUTABLE) =>
+          tags += Tag(name.decode, path, t.pos.lineContent, VarType)
         case ValDef(_, name, _, _) =>
-          tags += Tag(name.decode, path, sym.pos.lineContent, ValType)
+          tags += Tag(name.decode, path, t.pos.lineContent, ValType)
         case _ => // do nothing
       }
       super.traverse(t)
@@ -103,7 +105,7 @@ abstract class TagsTraverser extends PluginComponent {
 
 object TagsTraverser {
   val headers = List(
-    "!_TAG_FILE_FORMAT\t2\t/extended format; --format=1 will not append ;\" to lines/",
+    "!_TAG_FILE_FORMAT\t2\t/extended format;/",
     "!_TAG_FILE_SORTED\t1\t/0=unsorted, 1=sorted, 2=foldcase/",
     "!_TAG_PROGRAM_AUTHOR\tLucas Satabin\t/lucassat@n7mm.org/",
     "!_TAG_PROGRAM_NAME\tscala-ctags\t//",
