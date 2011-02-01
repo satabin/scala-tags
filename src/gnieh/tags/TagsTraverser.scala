@@ -85,24 +85,40 @@ abstract class TagsTraverser extends PluginComponent {
         case ClassDef(mods, name, _, _)
               if mods.hasFlag(TRAIT) && !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, TraitType)
+          super.traverse(t)
+          
         case ClassDef(mods, name, _, _)
               if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ClassType)
+          super.traverse(t)
+          
         case ModuleDef(mods, name, _)
               if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ObjectType)
+          super.traverse(t)
+          
+        case DefDef(_, name, _, _, _, body) if name == nme.CONSTRUCTOR  =>
+          // do not generate tags for constructors definition, simply traverse the body
+          traverse(body)
+
         case DefDef(mods, name, _, _, _, _)
               if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, DefType)
+          super.traverse(t)
+          
         case ValDef(mods, name, _, _)
               if mods.hasFlag(MUTABLE) && !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, VarType)
+          super.traverse(t)
+          
         case ValDef(mods, name, _, _)
               if !mods.hasFlag(SYNTHETIC) =>
           tags += Tag(name.decode, path, t.pos.lineContent, ValType)
-        case _ => // do nothing
+          super.traverse(t)
+          
+        case _ =>
+          super.traverse(t)
       }
-      super.traverse(t)
     }
   }
 
