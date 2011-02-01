@@ -1,0 +1,84 @@
+<project name="Gnieh Coroutines" basedir="." default="compile">
+
+  <property file="${basedir}/build.properties" />
+
+  <property name="plugin.src.dir" value="src" />
+  <property name="build.dir" value="build" />
+  <property name="dist.dir" value="dist" />
+
+  <path id="scala.classpath">
+    <fileset dir="${scala.home}/lib">
+      <include name="scala-library.jar" />
+      <include name="scala-compiler.jar" />
+    </fileset>
+  </path>
+
+  <path id="build.classpath">
+    <pathelement location="${scala.home}/lib/scala-library.jar" />
+    <pathelement location="${scala.home}/lib/scala-swing.jar" />
+    <pathelement location="${scala.home}/lib/scala-compiler.jar" />
+    <pathelement location="${build.dir}" />
+  </path>
+
+  <!-- Setting-up Scala tasks -->
+  <taskdef resource="scala/tools/ant/antlib.xml"
+           classpathref="scala.classpath" />
+
+  <!-- - - - - - - - - - - - - - - - - - 
+          target: init                      
+         - - - - - - - - - - - - - - - - - -->
+  <target name="init">
+    <mkdir dir="${build.dir}" />
+  </target>
+
+  <!-- ================================= 
+          target: compile              
+         ================================= -->
+  <target name="compile" depends="init" description="Compiles the application">
+
+    <scalac compilerpathref="scala.classpath"
+            destdir="${build.dir}"
+            srcdir="${plugin.src.dir}"
+            addparams="${compile.options}"
+            includes="**/*.scala">
+      <classpath refid="build.classpath" />
+    </scalac>
+
+    <copy todir="${build.dir}"
+          file="${plugin.src.dir}/scalac-plugin.xml" />
+
+  </target>
+
+  <!-- ================================= 
+          target: dist              
+         ================================= -->
+  <target name="dist"
+          depends="compile"
+          description="Creates the distribution files">
+
+    <mkdir dir="${dist.dir}" />
+
+    <jar destfile="${dist.dir}/scala-tags.jar">
+      <fileset dir="${build.dir}">
+        <include name="**/*.class" />
+        <include name="scalac-plugin.xml" />
+      </fileset>
+      <fileset dir="${basedir}">
+        <include name="LICENSE"/>
+        <include name="NOTICE"/>
+      </fileset>
+    </jar>
+
+  </target>
+
+
+  <!-- ================================= 
+          target: clean              
+         ================================= -->
+  <target name="clean" description="Cleans the build">
+    <delete dir="${build.dir}" />
+    <delete dir="${dist.dir}" />
+  </target>
+
+
+</project>
