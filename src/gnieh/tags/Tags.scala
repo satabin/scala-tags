@@ -17,9 +17,10 @@
 package gnieh.tags
 
 case class Tag(name: String, file: String, line: String, tpe: TagType) {
-  // TODO add tagfield
-  override def toString = name + "\t" + file + "\t/^" + line + "$/;\"  " + tpe
+  override def toString = name + "\t" + file + "\t/^" + line + "$/;\"\t" + tpe
 }
+
+// the tag type respects the format given at this address http://ctags.sourceforge.net/FORMAT
 
 sealed trait TagType
 case object ClassType extends TagType {
