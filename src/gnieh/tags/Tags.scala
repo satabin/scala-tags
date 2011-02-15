@@ -30,17 +30,17 @@ case object ObjectType extends TagType {
   override def toString = "o"
 }
 case object TraitType extends TagType {
-  override def toString = "t"
+  override def toString = "T"
 }
 case object DefType extends TagType {
-  override def toString = "m"
+  override def toString = "f"
 }
 case object ValType extends TagType {
-  override def toString = "C"
+  override def toString = "C" // "C" as in "Constant"
 }
 case object VarType extends TagType {
   override def toString = "v"
 }
 case object TypeType extends TagType {
-  override def toString = "T"
+  override def toString = "t" // use the typedef from C
 }
