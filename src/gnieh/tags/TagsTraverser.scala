@@ -35,6 +35,7 @@ abstract class TagsTraverser extends PluginComponent {
   val tags = new ListBuffer[Tag]
   var currentUnit: CompilationUnit = null
   var outputFile: String = null
+  var absolute = false
 
   def newPhase(prev: Phase): Phase = new StdPhase(prev) {
     def apply(unit: CompilationUnit) {
@@ -78,7 +79,11 @@ abstract class TagsTraverser extends PluginComponent {
 
   object tagsCollecter extends Traverser {
     override def traverse(t: Tree) = {
-      val path = currentUnit.source.path
+      val path = 
+        if(absolute)
+          currentUnit.source.file.absolute.path
+        else
+          currentUnit.source.path
       t match {
         case ClassDef(mods, name, _, _)
               if mods.hasFlag(TRAIT) && !mods.hasFlag(SYNTHETIC) =>
@@ -105,7 +110,13 @@ abstract class TagsTraverser extends PluginComponent {
 
         case DefDef(mods, name, _, _, _, _)
               if !mods.hasFlag(SYNTHETIC) =>
-          tags += Tag(name.decode, path, t.pos.lineContent, DefType)
+          // if the method is a constructor, replace `this' by the class name
+          val realName = 
+            if(t.symbol.isConstructor)
+              t.symbol.owner.name.decode
+            else
+              name.decode
+          tags += Tag(realName, path, t.pos.lineContent, DefType)
           super.traverse(t)
           
         case ValDef(mods, name, _, _)

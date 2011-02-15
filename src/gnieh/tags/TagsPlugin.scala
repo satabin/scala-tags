@@ -41,13 +41,16 @@ class TagsPlugin(val global: Global) extends Plugin {
         case tagFile(file) =>
           global.settings.stop.value = List("superaccessors")
           phase.outputFile = file
+        case "absolute" => phase.absolute = true
         case _ => error("Option not understood: " + option)
       }
     }
   }
   
   override val optionsHelp: Option[String] = 
-    Some("  -P:scalatags:file=<path>        generate the tag file only (no class file generated)")
+    Some(
+"""  -P:scalatags:file=<path>        generate the tag file only (no class file generated)
+  -P:scalatags:absolute            generated paths are absolute""")
   
   object tagFile {
     def unapply(option: String): Option[String] = {
