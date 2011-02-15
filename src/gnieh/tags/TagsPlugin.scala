@@ -29,8 +29,8 @@ class TagsPlugin(val global: Global) extends Plugin {
 
   val phase = new TagsTraverser() {
     val global = TagsPlugin.this.global
-    val runsAfter = List("parser")
-    override val runsBefore = List("namer")
+    val runsAfter = List("typer")
+    override val runsRightAfter = Some("typer")
   }
 
   val components = List[PluginComponent](phase)
@@ -39,7 +39,7 @@ class TagsPlugin(val global: Global) extends Plugin {
     for (option <- options) {
       option match {
         case tagFile(file) =>
-          global.settings.stop.value = List("namer")
+          global.settings.stop.value = List("superaccessors")
           phase.outputFile = file
         case _ => error("Option not understood: " + option)
       }
