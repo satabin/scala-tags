@@ -18,7 +18,7 @@ package gnieh.tags
 
 case class Tag(name: String, file: String, line: String, tpe: TagType) {
   // TODO add tagfield
-  override def toString = name + "\t" + file + "\t/^" + line + "$/" //;\"  " + tpe
+  override def toString = name + "\t" + file + "\t/^" + line + "$/;\"  " + tpe
 }
 
 sealed trait TagType
