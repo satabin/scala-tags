@@ -97,9 +97,12 @@ abstract class TagsTraverser extends PluginComponent {
           tags += Tag(name.decode, path, t.pos.lineContent, ObjectType)
           super.traverse(t)
           
-        case DefDef(mods, _, _, _, _, body) if t.symbol.isPrimaryConstructor  =>
+        case DefDef(_, _, _, _, _, body) if t.symbol.isPrimaryConstructor  =>
           // do not generate tags for primary constructor, simply traverse the body
-          println("primary constructor")
+          traverse(body)
+          
+        case DefDef(_, _, _, _, _, body) if t.symbol.isGetterOrSetter =>
+          // do not generate tags for accessor, simply traverse the body
           traverse(body)
 
         case DefDef(mods, name, _, _, _, _)
