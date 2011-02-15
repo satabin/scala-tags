@@ -65,7 +65,7 @@ abstract class TagsTraverser extends PluginComponent {
           writer.flush
         }
         // then all the tags (sorted by name)
-        val sorted = tags.sortWith (_.name.toLowerCase < _.name.toLowerCase)
+        val sorted = tags.sortWith (_.name < _.name)
         sorted.foreach { tag =>
           writer.write(tag.toString)
           writer.write("\n")
