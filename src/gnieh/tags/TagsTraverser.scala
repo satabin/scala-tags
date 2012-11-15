@@ -104,7 +104,7 @@ abstract class TagsTraverser extends PluginComponent {
           // do not generate tags for primary constructor, simply traverse the body
           traverse(body)
           
-        case DefDef(_, _, _, _, _, body) if t.symbol.isGetterOrSetter =>
+        case DefDef(_, _, _, _, _, body) if t.symbol.hasFlag(Flags.ACCESSOR) =>
           // do not generate tags for accessor, simply traverse the body
           traverse(body)
 
